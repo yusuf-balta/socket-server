@@ -3,20 +3,24 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
 
-app.get("/", (req, res) => {});
-
-io.on("connection", (socket) => {
-  const tempModel = {
-    user: "yusuf",
-  };
-
-  socket.send("update-status", tempModel);
-
-  console.log("a user connected");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
 });
 
-server.listen(3000, () => {
-  console.log("listening on *:3000");
+app.get("/", (req, res) => {
+  console.log("/ isteği geldi");
+  res.send("başarılı");
+});
+
+io.on("connection", (socket) => {
+  socket.on("any", (v) => io.sockets.emit("any", v));
+
+  console.log(socket.id, " user connected");
+});
+
+server.listen(80, () => {
+  console.log("listening on *:80");
 });
